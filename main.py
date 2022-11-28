@@ -20,40 +20,37 @@ options.add_argument("start-maximized")
 options.add_argument("--disable-extensions")
 options.add_experimental_option("prefs", {"profile.default_content_setting_values.notifications": 1})
 
-bcca = "C:/Users/LIN20/Desktop/crawler/chromedriver.exe"
+bcca = "C:/Users/user/Desktop/fb_web_crawler-main/chromedriver.exe"
 driver=webdriver.Chrome(executable_path=bcca,chrome_options=options)
 driver.maximize_window()
 driver.get(Faaa)
-wb = op.load_workbook('test.xlsx')
+wb = op.load_workbook('C:/Users/user/Desktop/fb_web_crawler-main/test.xlsx')
 
 def login(file):
-    try:
-        f = open(file, 'r')
-        account=f.readline()
-        peeasf=f.readline()
-        f.close()
-        del f
-    except:
-        print("NO file")
-        driver.close()
+    
+    f = open(file, 'r')
+    account=f.readline()
+    peeasf=f.readline()
+    print(account[:-1])
+    print(peeasf[:-1])
+    f.close()
+    leeasd(account[:-1],peeasf[:-1])
+    time.sleep(3)
 
-    time.sleep(4)
-
+def leeasd(acc,peeasf):
+    time.sleep(3)
     try:
         print("login")
         inputemail = driver.find_element(By.NAME,"email")
-        inputemail.send_keys(account)
+        inputemail.send_keys(acc)
         intputpass = driver.find_element(By.NAME,"pass")
         intputpass.send_keys(peeasf)
         button= driver.find_element(By.NAME,"login")
-        time.sleep(2)
         button.click()
-        print("login success")
-        del account
-        del peeasf
     except:
         print("login error")
-        driver.close()
+    finally:
+        print("login success")
     
         
 
@@ -64,6 +61,9 @@ def write(adress,worksheet):
     goto_memberpage(driver,adress)
     time.sleep(3)
     sheet = wb[worksheet]
+    for i in range(8):
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(3)
     try:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         memberaccout = driver.find_elements(By.CLASS_NAME,"xt0psk2")
@@ -93,11 +93,14 @@ def write(adress,worksheet):
 
 
 login("data\login.txt")
-time.sleep(3)
+time.sleep(8)
 f=open("data\webaddress.txt","r")
 webaddress=f.readlines()
 for i in range(len(webaddress)):
+    
+    print(webaddress[i][:-1])
     write(webaddress[i][:-1],'工作表'+str(i+1))
+    time.sleep(8)
 
 
 f.close()
