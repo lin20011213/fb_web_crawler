@@ -9,9 +9,9 @@
 ## 輸入帳號密碼  
 在 accounts.ini 輸入你的帳號密碼  
 ex:    
-    account@gmail.com  帳號
-    password  密碼
-    Amount 數量
+    account@gmail.com  帳號   
+    password  密碼   
+    Amount 數量   
        
 ## 輸入社團網址
 在 webadrress.txt 輸入你的社團成員要求頁面網址   
