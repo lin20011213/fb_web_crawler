@@ -72,46 +72,6 @@ class FBcrawl:
 
 
 
-    def write_all(self,address,worksheet):
-        time.sleep(2)
-        self.driver.get(address)
-        wb = op.load_workbook(self.xlsxPath)
-        time.sleep(3)
-        sheet = wb[worksheet]
-        
-        while True:
-            firstcheck=driver.execute_script("return document.body.scrollHeight;")
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(2)
-            Seccheck=driver.execute_script("return document.body.scrollHeight;")
-            if(firstcheck==Seccheck):
-                break
-            time.sleep(3)
-        try:
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            memberaccout = driver.find_elements(By.CLASS_NAME,"xt0psk2")
-            memberanswer = driver.find_elements(By.CLASS_NAME,'x1gslohp')
-            num=1
-            print("max column"+sheet.max_column)
-            for i in range(len(memberaccout)):
-                print(memberaccout[i].text+" "+memberanswer[i].text)
-                
-                if (memberaccout[i].text==memberaccout[i-1].text) :
-                    menber='C'+str(num)
-                    print(menber) 
-                    sheet[menber].value=memberanswer[i].text
-                else:
-                    num=num+1
-                    menber='A'+str(num)
-                    print(menber)
-                    sheet[menber].value=memberaccout[i].text
-                    sheet['B'+str(num)].value=memberanswer[i].text
-                    
-        except:
-            print("ERROR")
-
-        print("Successful")
-        wb.save('test.xlsx')
 
     def write(self,address,worksheet):
         time.sleep(2)
@@ -120,6 +80,7 @@ class FBcrawl:
         time.sleep(3)
         sheet = wb[worksheet]
         max=self.load_xlsx(worksheet)
+        
         while True:
             firstcheck=driver.execute_script("return document.body.scrollHeight;")
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -129,51 +90,50 @@ class FBcrawl:
                 break
             time.sleep(3)
 
-        print("A")
-        print(f"max column {sheet.max_column}")
-        title = driver.find_element(By.XPATH,"/html/body/div[1]/div[1]/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div/div[1]/div/div[1]/div[1]/div[2]/div/div[2]/div[1]/div[2]/div/div[1]/span")
-        print(title.text)
-        sheet["A1"].value=title.text
-        try:
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            memberaccout = driver.find_elements(By.CLASS_NAME,"xt0psk2")
-            memberanswer = driver.find_elements(By.CLASS_NAME,'x1gslohp')
-            num=1
-            print (max)
-            if(int(self.Amount)>len(memberaccout)):
-                count=len(memberaccout)
-            else:
-                count=int(self.Amount)
-            print(f"AMMOUNT {count}")
-            sheet["A2"].value=memberaccout[i].text
-            for i in range(count):
-                sheet.insert_rows(2)
-            for i in range(1,count):
-                print(memberaccout[i].text+" "+memberanswer[i].text)
-                if (memberaccout[i].text==max):
-                    break
-                if (memberaccout[i].text==memberaccout[i-1].text) :
-                    menber='C'+str(num)
-                    print(menber) 
-                    sheet[menber].value=memberanswer[i].text
-                else:
-                    num=num+1
-                    menber='A'+str(num)
-                    print(menber)
-                    sheet[menber].value=memberaccout[i].text
-                    sheet['B'+str(num)].value=memberanswer[i].text
-                    
-        except:
-            print("ERROR")
-        for j in range (sheet.max_row):
-            for i in range (2,sheet.max_row):
-                #print(sheet['B'+str(i)].value)
-                if (sheet['B'+str(i)].value == None ):
-                    sheet.delete_rows(i)
-        
+        load_all_data(driver,sheet)
         print("Successful")
         wb.save('test.xlsx')
 
+def load_all_data(driver,sheet):
+        listrow=["B1","B","C1","C","D1","D","E1","E","F1","F"]
+        soup=BeautifulSoup(driver.page_source,'html.parser')
+        title=soup.title
+        print(title.string)
+        b=soup.findChildren("div",class_="xamitd3 x1sy10c2 xieb3on x193iq5w xrljuej x1aody8q")
+        a=soup.find_all("div",class_="x1jx94hy x30kzoy x9jhf4c xgqcy7u x1lq5wgf xev17xk xktsk01 x1d52u69 x19i0xim x6ikm8r x10wlt62 x1n2onr6")#x1y1aw1k x1pi30zi x18d9i69 x1swvt13
+        #print(a)
+
+        #檢查重複依據
+        checkpoint=[sheet["A2"].value,sheet["A3"].value,sheet["A4"].value,sheet["A5"].value]
+        print(len(a))
+
+        #從第二格開始存
+        num=2
+
+        #開始加人
+        for i in a:
+            Name=i.find_all("span",class_="xt0psk2")
+            Name1=Name[0].find("a",class_="x1i10hfl xjbqb8w x6umtig x1b1mbwd xaqea5y xav7gou x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz x1heor9g xt0b8zv x1s688f")
+            QA=i.find_all("li",class_="x1y1aw1k x4uap5 xwib8y2 xkhd6sd")
+            print(Name1.string)
+            count=0
+            if(checkpoint[0]==Name1.string or checkpoint[1]==Name1.string or checkpoint[2]==Name1.string or checkpoint[3]==Name1.string):
+                break
+            sheet.insert_rows(num)
+            for k in range(len(QA)):
+                b=QA[k].find("span",class_="x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x3x7a5m x6prxxf xvq8zen x1s688f x12scifz")
+                c=QA[k].find("span",class_="x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x3x7a5m x6prxxf xvq8zen xo1l8bm xzsf02u")
+                sheet["A"+str(num)].value=Name1.string
+                print(b.string)
+                print(c.string)
+                for i in range(0,len(listrow)-1,2):
+                    if(sheet[listrow[i]].value==b.string):
+                        sheet[listrow[i+1]+str(num)].value=c.string
+            num=num+1#換人
+            #print(len(QA))
+            #print(QA)
+            print("\n")
+        #print(b)
 
 
 
@@ -204,7 +164,8 @@ if __name__ == '__main__':
     driver=webdriver.Chrome(chrome_options=options)
     aa=FBcrawl(driver,Account,Password,Amount)
     aa.login()
+    time.sleep(2)
     aa.mult_web()
-    
+ 
     
     
