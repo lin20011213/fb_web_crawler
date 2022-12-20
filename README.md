@@ -11,7 +11,7 @@
 ex:    
     account@gmail.com  帳號   
     password  密碼   
-    Amount 數量   
+    Amount 數量   (2022/11/20)停用
        
 ## 輸入社團網址
 在 webadrress.txt 輸入你的社團成員要求頁面網址   
