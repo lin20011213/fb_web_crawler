@@ -8,6 +8,9 @@ import time
 import openpyxl as op
 import configparser
 import os
+import chromedriver_autoinstaller
+from selenium import webdriver
+
 
 
 class FBcrawl:
@@ -139,15 +142,29 @@ def load_all_data(driver,sheet):
 
 
 if __name__ == '__main__':
-    configFilename = 'data/accounts.ini'
-    if not os.path.isfile(configFilename):
-        with open(configFilename, 'a') as f:
-            f.writelines(["[Default]\n", "Account= your account\n", "Password= your password"])
-            print('input your username and password in accounts.ini')
+    
+    try:
+        print(chromedriver_autoinstaller.get_chrome_version())
+    except Exception as e:
+        print(f"Chrome Driver版本檢查失敗：{str(e)}")
+        exit()
+
+    try:
+        browser = webdriver.Chrome()
+        browser.get("https://www.google.com/")
+        browser.quit()
+    except Exception as e:
+        print(f"Chrome瀏覽器無法啟動：{str(e)}")
+
+        try:
+            chromedriver_autoinstaller.install()
+            print("成功下載和安裝最新版本的Chrome Driver，請重新啟動程式。")
             exit()
-    # get account info from ini config file
+        except Exception as e:
+            print(f"Chrome Driver下載和安裝失敗：{str(e)}")
+
     config = configparser.ConfigParser()
-    config.read(configFilename)
+    config.read('data/accounts.ini')
     Account = config['Default']['Account']
     Password = config['Default']['Password']
     Amount = config['Default']['Amount']
@@ -168,4 +185,6 @@ if __name__ == '__main__':
     aa.mult_web()
  
     
+    
+
     
